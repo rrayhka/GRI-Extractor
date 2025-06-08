@@ -22,6 +22,9 @@ import numpy as np
 from fuzzywuzzy import fuzz, process
 from groq import Groq
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -256,12 +259,15 @@ class GRIExtractor:
         """
         self.gri_dicts = GRI_Dicts
         self.groq_client = None
-        if groq_api_key:
+        api_key = groq_api_key or os.getenv('GROQ_API_KEY')
+        if api_key:
             try:
-                self.groq_client = Groq(api_key=groq_api_key)
+                self.groq_client = Groq(api_key=api_key)
                 logger.info("Groq client initialized successfully")
             except Exception as e:
                 logger.warning(f"Failed to initialize Groq client: {e}")
+        else:
+            logger.warning("No Groq API key provided, LLM detection will be disabled")
         
         # GRI section detection patterns (English and Indonesian)
         self.gri_patterns = [
@@ -557,10 +563,10 @@ class GRIExtractor:
                 # Multiple search strategies for each code
                 found = self._search_gri_code_in_text(gri_code, description, section_text_lower)
                 if found:
-                    results[gri_code] = "yes"
+                    results[gri_code] = "YES"
                     logger.debug(f"Found GRI code {gri_code}")
         
-        found_count = sum(1 for status in results.values() if status == "yes")
+        found_count = sum(1 for status in results.values() if status == "YES")
         logger.info(f"Found {found_count} out of {len(results)} GRI codes")
         
         return results
