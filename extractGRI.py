@@ -701,35 +701,3 @@ def extract_gri_from_pdf(pdf_path: str, groq_api_key: Optional[str] = None) -> D
     """
     extractor = GRIExtractor(groq_api_key=groq_api_key)
     return extractor.extract_gri_disclosures(pdf_path)
-
-
-if __name__ == "__main__":
-    # Example usage
-    pdf_file = "../antam2024.pdf"
-    
-    if os.path.exists(pdf_file):
-        print("Extracting GRI disclosures...")
-        results = extract_gri_from_pdf(pdf_file)
-        
-        # Print summary
-        total_codes = len(results["gri_disclosures"])
-        found_codes = sum(1 for item in results["gri_disclosures"] if item["status"] == "yes")
-        
-        print(f"\nExtraction Summary:")
-        print(f"Total GRI codes: {total_codes}")
-        print(f"Found GRI codes: {found_codes}")
-        print(f"Coverage: {found_codes/total_codes*100:.1f}%")
-        
-        # Show found codes
-        print(f"\nFound GRI codes:")
-        for item in results["gri_disclosures"]:
-            if item["status"] == "yes":
-                print(f"- {item['gri_code']}: {item['material_topic']}")
-        
-        # Save results to JSON
-        with open("gri_extraction_results.json", "w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
-        print(f"\nResults saved to 'gri_extraction_results.json'")
-        
-    else:
-        print(f"PDF file '{pdf_file}' not found!")
