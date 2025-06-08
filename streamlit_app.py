@@ -17,6 +17,8 @@ from typing import Dict, List, Any, Optional
 from extractGRI import GRIExtractor
 import plotly.express as px
 import plotly.graph_objects as go
+from dotenv import load_dotenv
+load_dotenv()
 
 # Configure Streamlit page
 st.set_page_config(
@@ -257,7 +259,10 @@ def main():
         ],
         help="Choose the extraction strategy to use"
     )
-    
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("✅ **Best Method Recommendation**")
+    st.sidebar.markdown("- **TF-IDF Similarity** provides the best balance of accuracy and speed. It is especially effective for diverse document formats.")
+
     # Optional Groq API key
     use_llm = st.sidebar.checkbox(
         "🤖 Enable LLM Fallback",
@@ -265,17 +270,45 @@ def main():
         help="Enable Groq LLM as fallback for difficult cases"
     )
     
-    groq_api_key = None
+    
+    # groq_api_key = None
+    # if use_llm or "LLM" in extraction_method:
+    #     groq_api_key = st.sidebar.text_input(
+    #         "🔑 Groq API Key:",
+    #         type="password",
+    #         help="Enter your Groq API key for LLM analysis"
+    #     )
+        
+    #     if not groq_api_key and ("LLM" in extraction_method):
+    #         st.sidebar.warning("⚠️ Groq API key required for LLM analysis")
+    # groq_api_key = os.getenv("GROQ_API_KEY")
+    groq_api_key = os.getenv("GROQ_API_KEY")
     if use_llm or "LLM" in extraction_method:
-        groq_api_key = st.sidebar.text_input(
-            "🔑 Groq API Key:",
-            type="password",
-            help="Enter your Groq API key for LLM analysis"
-        )
+        # Show current status
+        if groq_api_key:
+            st.sidebar.success("✅ Groq API key loaded from environment")
+            # Option to override with manual input
+            override_key = st.sidebar.text_input(
+                "🔑 Override Groq API Key (optional):",
+                type="password",
+                help="Leave empty to use environment variable",
+                placeholder="Using environment variable"
+            )
+            if override_key:
+                groq_api_key = override_key
+        else:
+            st.sidebar.warning("⚠️ No API key found in environment")
+            groq_api_key = st.sidebar.text_input(
+                "🔑 Groq API Key:",
+                type="password",
+                help="Enter your Groq API key for LLM analysis"
+            )
         
         if not groq_api_key and ("LLM" in extraction_method):
-            st.sidebar.warning("⚠️ Groq API key required for LLM analysis")
-    
+            st.sidebar.error("❌ Groq API key required for LLM analysis")
+            st.sidebar.info("💡 Tip: Add GROQ_API_KEY to your .env file")
+
+
     # File upload
     st.header("📄 Upload Sustainability Report PDF")
     uploaded_file = st.file_uploader(
