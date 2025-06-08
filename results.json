@@ -1,0 +1,674 @@
+{
+  "gri_disclosures": [
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-6",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-7",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-8",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-9",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-10",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-11",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-12",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-13",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-14",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-15",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-16",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-17",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-18",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-19",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-20",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-21",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-22",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-23",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-24",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-25",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-26",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-27",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-28",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-29",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 2: General Disclosures 2021",
+      "gri_code": "2-30",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 3: Material Topics 2021",
+      "gri_code": "3-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 3: Material Topics 2021",
+      "gri_code": "3-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 3: Material Topics 2021",
+      "gri_code": "3-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-1",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-3",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-5",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-6",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-7",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 101: Biodiversity 2024",
+      "gri_code": "101-8",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 201: Economic Performance 2016",
+      "gri_code": "201-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 201: Economic Performance 2016",
+      "gri_code": "201-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 201: Economic Performance 2016",
+      "gri_code": "201-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 201: Economic Performance 2016",
+      "gri_code": "201-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 202: Market Presence 2016",
+      "gri_code": "202-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 202: Market Presence 2016",
+      "gri_code": "202-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 203: Indirect Economic Impacts 2016",
+      "gri_code": "203-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 203: Indirect Economic Impacts 2016",
+      "gri_code": "203-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 204: Procurement Practices 2016",
+      "gri_code": "204-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 205: Anti-Corruption 2016",
+      "gri_code": "205-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 205: Anti-Corruption 2016",
+      "gri_code": "205-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 205: Anti-Corruption 2016",
+      "gri_code": "205-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 206: Anti-Competitive Behavior 2016",
+      "gri_code": "206-1",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 207: Tax 2019",
+      "gri_code": "207-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 207: Tax 2019",
+      "gri_code": "207-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 207: Tax 2019",
+      "gri_code": "207-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 207: Tax 2019",
+      "gri_code": "207-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 301: Materials 2016",
+      "gri_code": "301-1",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 301: Materials 2016",
+      "gri_code": "301-2",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 301: Materials 2016",
+      "gri_code": "301-3",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 302: Energy 2016",
+      "gri_code": "302-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 302: Energy 2016",
+      "gri_code": "302-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 302: Energy 2016",
+      "gri_code": "302-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 302: Energy 2016",
+      "gri_code": "302-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 302: Energy 2016",
+      "gri_code": "302-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 303: Water and Effluents 2018",
+      "gri_code": "303-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 303: Water and Effluents 2018",
+      "gri_code": "303-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 303: Water and Effluents 2018",
+      "gri_code": "303-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 303: Water and Effluents 2018",
+      "gri_code": "303-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 303: Water and Effluents 2018",
+      "gri_code": "303-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 304: Biodiversity 2016",
+      "gri_code": "304-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 304: Biodiversity 2016",
+      "gri_code": "304-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 304: Biodiversity 2016",
+      "gri_code": "304-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 304: Biodiversity 2016",
+      "gri_code": "304-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-6",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 305: Emissions 2016",
+      "gri_code": "305-7",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Effluents and Waste 2016",
+      "gri_code": "306-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Effluents and Waste 2016",
+      "gri_code": "306-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Effluents and Waste 2016",
+      "gri_code": "306-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Effluents and Waste 2016",
+      "gri_code": "306-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Effluents and Waste 2016",
+      "gri_code": "306-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Waste 2020",
+      "gri_code": "306-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Waste 2020",
+      "gri_code": "306-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Waste 2020",
+      "gri_code": "306-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Waste 2020",
+      "gri_code": "306-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 306: Waste 2020",
+      "gri_code": "306-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 308: Supplier Environmental Assessment 2016",
+      "gri_code": "308-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 308: Supplier Environmental Assessment 2016",
+      "gri_code": "308-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 401: Employment 2016",
+      "gri_code": "401-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 401: Employment 2016",
+      "gri_code": "401-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 401: Employment 2016",
+      "gri_code": "401-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 402: Labor/Management Relations 2016",
+      "gri_code": "402-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-4",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-5",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-6",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-7",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-8",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-9",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 403: Occupational Health and Safety 2018",
+      "gri_code": "403-10",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 404: Training and Education 2016",
+      "gri_code": "404-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 404: Training and Education 2016",
+      "gri_code": "404-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 404: Training and Education 2016",
+      "gri_code": "404-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 405: Diversity and Equal Opportunity 2016",
+      "gri_code": "405-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 405: Diversity and Equal Opportunity 2016",
+      "gri_code": "405-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 405: Diversity and Equal Opportunity 2016",
+      "gri_code": "405-3",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 406: Non-discrimination 2016",
+      "gri_code": "406-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 407: Freedom of Association and Collective Bargaining 2016",
+      "gri_code": "407-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 408: Child Labor 2016",
+      "gri_code": "408-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 409: Forced or Compulsory Labor 2016",
+      "gri_code": "409-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 410: Security Practices 2016",
+      "gri_code": "410-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 411: Rights of Indigenous Peoples 2016",
+      "gri_code": "411-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 412: Human Rights Assessment 2016",
+      "gri_code": "412-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 412: Human Rights Assessment 2016",
+      "gri_code": "412-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 412: Human Rights Assessment 2016",
+      "gri_code": "412-3",
+      "status": null
+    },
+    {
+      "material_topic": "GRI 413: Local Communities 2016",
+      "gri_code": "413-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 413: Local Communities 2016",
+      "gri_code": "413-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 414: Supplier Social Assessment 2016",
+      "gri_code": "414-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 414: Supplier Social Assessment 2016",
+      "gri_code": "414-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 415: Public Policy 2016",
+      "gri_code": "415-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 416: Customer Health and Safety 2016",
+      "gri_code": "416-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 416: Customer Health and Safety 2016",
+      "gri_code": "416-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 417: Marketing and Labeling 2016",
+      "gri_code": "417-1",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 417: Marketing and Labeling 2016",
+      "gri_code": "417-2",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 417: Marketing and Labeling 2016",
+      "gri_code": "417-3",
+      "status": "yes"
+    },
+    {
+      "material_topic": "GRI 418: Customer Privacy 2016",
+      "gri_code": "418-1",
+      "status": "yes"
+    }
+  ]
+}
