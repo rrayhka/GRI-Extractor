@@ -145,11 +145,11 @@ GRI_Dicts = {
         "305-7": "Nitrogen oxides (NOX), sulfur oxides (SOX), and other significant air emissions"  
     },
     "GRI 306: Effluents and Waste 2016": {
-        "306-1": "Water discharge by quality and destination",
-        "306-2": "Waste by type and disposal method",
+        # "306-1": "Water discharge by quality and destination",
+        # "306-2": "Waste by type and disposal method",
         "306-3": "Significant spills",
-        "306-4": "Transport of hazardous waste",
-        "306-5": "Water bodies affected by water discharges and/or runoff"
+        # "306-4": "Transport of hazardous waste",
+        # "306-5": "Water bodies affected by water discharges and/or runoff"
     },
     "GRI 306: Waste 2020": {
         "306-1": "Waste generation and significant waste-related impacts",
@@ -628,7 +628,7 @@ class GRIExtractor:
         gri_start_page = None
         
         # Strategy 1: Pattern matching
-        gri_start_page = self.detect_gri_section_pattern_matching(pages_data)
+        # gri_start_page = self.detect_gri_section_pattern_matching(pages_data)
         
         # Strategy 2: TF-IDF (fallback)
         if gri_start_page is None:
@@ -654,11 +654,12 @@ class GRIExtractor:
         """Create result dictionary with all GRI codes marked as 'none'."""
         results = []
         for material_topic, codes in self.gri_dicts.items():
-            for gri_code in codes.keys():
+            for gri_code, description in codes.items():
                 results.append({
                     "material_topic": material_topic,
                     "gri_code": gri_code,
-                    "status": "none"
+                    "status": "none",
+                    "description": description
                 })
         return {"gri_disclosures": results}
     
@@ -675,12 +676,13 @@ class GRIExtractor:
         results = []
         
         for material_topic, codes in self.gri_dicts.items():
-            for gri_code in codes.keys():
+            for gri_code, description in codes.items():
                 status = gri_status.get(gri_code, "none")
                 results.append({
                     "material_topic": material_topic,
                     "gri_code": gri_code,
-                    "status": status
+                    "status": status,
+                    "description": description
                 })
         
         return {"gri_disclosures": results}
@@ -703,7 +705,7 @@ def extract_gri_from_pdf(pdf_path: str, groq_api_key: Optional[str] = None) -> D
 
 if __name__ == "__main__":
     # Example usage
-    pdf_file = "pdfs/antam2024.pdf"
+    pdf_file = "../antam2024.pdf"
     
     if os.path.exists(pdf_file):
         print("Extracting GRI disclosures...")

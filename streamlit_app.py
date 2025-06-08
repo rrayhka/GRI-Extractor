@@ -157,23 +157,27 @@ def create_coverage_chart(results: Dict[str, List[Dict[str, str]]]):
 def display_results_table(results: Dict[str, List[Dict[str, str]]]):
     """Display results in an interactive table."""
     st.subheader("📋 Detailed GRI Disclosure Results")
-      # Convert to DataFrame
+    
+    # Convert to DataFrame
     df = pd.DataFrame(results["gri_disclosures"])
     
-    # Handle null status values
-    df["status"] = df["status"].fillna("none")
+    # Handle null status values - convert to string for consistent processing
+    df["status"] = df["status"].fillna("none").astype(str)
     
     # Add status indicators
     def get_status_icon(status):
-        if not status or pd.isna(status):
+        if pd.isna(status) or status.lower() in ["none", "nan", ""]:
             return "❌"
-        return "✅" if str(status).lower() == "yes" else "❌"
+        return "✅" if status.lower() == "yes" else "❌"
     
     df["Status Icon"] = df["status"].apply(get_status_icon)
     
+    # Create a clean status column for filtering
+    df["Status_Clean"] = df["status"].apply(lambda x: "Found" if str(x).lower() == "yes" else "Not Found")
+    
     # Reorder columns
-    df = df[["Status Icon", "gri_code", "material_topic", "status"]]
-    df.columns = ["Status", "GRI Code", "Material Topic", "Found"]
+    df = df[["Status Icon", "gri_code", "material_topic", "status", "Status_Clean", "description"]]
+    df.columns = ["Status", "GRI Code", "Material Topic", "Found", "Status_Clean", "Description"]
     
     # Filter options
     col1, col2 = st.columns(2)
@@ -186,48 +190,58 @@ def display_results_table(results: Dict[str, List[Dict[str, str]]]):
         )
     
     with col2:
+        # Get unique topics and clean them up
+        unique_topics = sorted([topic for topic in df["Material Topic"].unique() if pd.notna(topic)])
         topic_filter = st.selectbox(
             "Filter by GRI Standard:",
-            options=["All"] + sorted(df["Material Topic"].unique()),
-            key="topic_filter"        )
+            options=["All"] + unique_topics,
+            key="topic_filter"
+        )
     
     # Apply filters
     filtered_df = df.copy()
     
+    # Apply status filter
     if status_filter == "Found Only":
-        mask = (filtered_df["Found"].notna()) & (filtered_df["Found"].str.lower() == "yes")
-        filtered_df = filtered_df[mask]
+        filtered_df = filtered_df[filtered_df["Status_Clean"] == "Found"]
     elif status_filter == "Not Found Only":
-        mask = (
-            (filtered_df["Found"].isnull()) | 
-            (filtered_df["Found"] == "none") | 
-            ((filtered_df["Found"].notna()) & (filtered_df["Found"].str.lower() != "yes"))
-        )
-        filtered_df = filtered_df[mask]
+        filtered_df = filtered_df[filtered_df["Status_Clean"] == "Not Found"]
     
+    # Apply topic filter
     if topic_filter != "All":
         filtered_df = filtered_df[filtered_df["Material Topic"] == topic_filter]
+      # Remove the helper column before display
+    display_df = filtered_df.drop(columns=["Status_Clean"])
     
     # Display table
     st.dataframe(
-        filtered_df,
+        display_df,
         use_container_width=True,
         hide_index=True,
         column_config={
             "Status": st.column_config.TextColumn(width="small"),
             "GRI Code": st.column_config.TextColumn(width="small"),
             "Material Topic": st.column_config.TextColumn(width="large"),
-            "Found": st.column_config.TextColumn(width="small")
+            "Found": st.column_config.TextColumn(width="small"),
+            "Description": st.column_config.TextColumn(width="large")
         }
     )
     
     # Display filter summary
-    st.caption(f"Showing {len(filtered_df)} of {len(df)} total GRI disclosures")
+    st.caption(f"Showing {len(display_df)} of {len(df)} total GRI disclosures")
 
 def main():
     """Main Streamlit application."""
     st.title("📊 GRI Disclosure Extractor")
     st.markdown("Extract GRI (Global Reporting Initiative) disclosures from sustainability report PDFs")
+    
+    # Initialize session state for results
+    if 'extraction_results' not in st.session_state:
+        st.session_state.extraction_results = None
+    if 'extraction_duration' not in st.session_state:
+        st.session_state.extraction_duration = None
+    if 'processed_filename' not in st.session_state:
+        st.session_state.processed_filename = None
     
     # Sidebar configuration
     st.sidebar.header("⚙️ Configuration")
@@ -319,8 +333,7 @@ def main():
                         if gri_start_page is None:
                             st.info("🔄 Pattern matching failed, trying TF-IDF...")
                             gri_start_page = extractor.detect_gri_section_tfidf(pages_data)
-                        
-                        # Fallback to LLM if enabled
+                          # Fallback to LLM if enabled
                         if gri_start_page is None and groq_api_key:
                             st.info("🔄 TF-IDF failed, trying LLM...")
                             gri_start_page = extractor.detect_gri_section_llm(pages_data)
@@ -337,46 +350,10 @@ def main():
                     
                     end_time = time.time()
                     duration = end_time - start_time
-                
-                # Display results
-                st.header("🎯 Extraction Results")
-                
-                # Summary metrics
-                display_extraction_summary(results, duration)
-                
-                # Coverage chart
-                st.subheader("📊 Coverage Analysis")
-                fig = create_coverage_chart(results)
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Results table
-                display_results_table(results)
-                
-                # Download options
-                st.header("💾 Download Results")
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    # JSON download
-                    json_str = json.dumps(results, indent=2, ensure_ascii=False)
-                    st.download_button(
-                        label="📄 Download JSON",
-                        data=json_str,
-                        file_name=f"gri_results_{uploaded_file.name.replace('.pdf', '')}.json",
-                        mime="application/json"
-                    )
-                
-                with col2:
-                    # CSV download
-                    df_download = pd.DataFrame(results["gri_disclosures"])
-                    csv_str = df_download.to_csv(index=False)
-                    st.download_button(
-                        label="📊 Download CSV",
-                        data=csv_str,
-                        file_name=f"gri_results_{uploaded_file.name.replace('.pdf', '')}.csv",
-                        mime="text/csv"
-                    )
+                      # Store results in session state
+                    st.session_state.extraction_results = results
+                    st.session_state.extraction_duration = duration
+                    st.session_state.processed_filename = uploaded_file.name
                 
             except Exception as e:
                 st.error(f"❌ Error during extraction: {str(e)}")
@@ -385,6 +362,53 @@ def main():
                 # Clean up temporary file
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
+    
+    # Display results (outside the extraction button block for persistence)
+    if st.session_state.extraction_results is not None:
+        results = st.session_state.extraction_results
+        duration = st.session_state.extraction_duration
+        processed_filename = st.session_state.processed_filename
+        
+        st.header("🎯 Extraction Results")
+        
+        # Summary metrics
+        display_extraction_summary(results, duration)
+        
+        # Coverage chart
+        st.subheader("📊 Coverage Analysis")
+        fig = create_coverage_chart(results)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Results table
+        display_results_table(results)
+        
+        # Download options
+        st.header("💾 Download Results")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # JSON download
+            json_str = json.dumps(results, indent=2, ensure_ascii=False)
+            st.download_button(
+                label="📄 Download JSON",
+                data=json_str,
+                file_name=f"gri_results_{processed_filename.replace('.pdf', '')}.json",
+                mime="application/json",
+                key="download_json"
+            )
+        
+        with col2:
+            # CSV download
+            df_download = pd.DataFrame(results["gri_disclosures"])
+            csv_str = df_download.to_csv(index=False)
+            st.download_button(
+                label="📊 Download CSV",
+                data=csv_str,
+                file_name=f"gri_results_{processed_filename.replace('.pdf', '')}.csv",
+                mime="text/csv",
+                key="download_csv"
+            )
     
     # Information section
     with st.expander("ℹ️ About GRI Extraction Methods"):
