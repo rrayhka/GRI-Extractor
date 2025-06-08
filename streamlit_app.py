@@ -1,21 +1,24 @@
+"""
+Streamlit Web Application for GRI Disclosure Extraction
+
+This web application provides an intuitive interface for extracting GRI disclosures 
+from sustainability report PDFs using multiple detection strategies.
+
+Author: Mohammad Habibul Akhyar
+Date: 8 June 2025
+"""
+
 import streamlit as st
 import pandas as pd
 import json
 import time
 import os
-from pathlib import Path
+from typing import Dict, List, Any, Optional
+from extractGRI import GRIExtractor
 import plotly.express as px
 import plotly.graph_objects as go
-from io import BytesIO
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
-# Import the GRI extractor
-from extractGRI import GRIExtractor
-
-# Page configuration
+# Configure Streamlit page
 st.set_page_config(
     page_title="GRI Disclosure Extractor",
     page_icon="📊",
@@ -23,388 +26,403 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .metric-container {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 0.5rem 0;
-    }
-    .status-good {
-        color: #28a745;
-        font-weight: bold;
-    }
-    .status-warning {
-        color: #ffc107;
-        font-weight: bold;
-    }
-    .status-danger {
-        color: #dc3545;
-        font-weight: bold;
-    }
-    .sidebar-note {
-        background-color: #2196f3;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid #2189;
-        margin: 1rem 0;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-def format_duration(seconds):
-    """Format duration in seconds to human-readable format."""
-    if seconds < 1:
-        return f"{seconds*1000:.0f}ms"
-    elif seconds < 60:
-        return f"{seconds:.1f}s"
+def format_duration(seconds: float) -> str:
+    """Format duration in seconds to human readable format."""
+    if seconds < 60:
+        return f"{seconds:.1f} seconds"
+    elif seconds < 3600:
+        minutes = seconds / 60
+        return f"{minutes:.1f} minutes"
     else:
-        minutes = int(seconds // 60)
-        remaining_seconds = seconds % 60
-        return f"{minutes}m {remaining_seconds:.1f}s"
+        hours = seconds / 3600
+        return f"{hours:.1f} hours"
 
-def get_status_emoji(status):
-    """Get emoji based on status."""
-    if not status:
-        return "❌"
-    status_upper = str(status).upper()
-    if status_upper == 'YES':
-        return "✅"
-    elif 'partial' in status_upper or 'incomplete' in status_upper:
-        return "⚠️"
+def get_status_emoji(coverage: float) -> tuple:
+    """Get status emoji and color based on coverage percentage."""
+    if coverage >= 90:
+        return "🟢", "EXCELLENT", "success"
+    elif coverage >= 70:
+        return "🟡", "GOOD", "warning"
+    elif coverage >= 50:
+        return "🟠", "FAIR", "info"
     else:
-        return "❌"
+        return "🔴", "POOR", "error"
 
-def get_coverage_status(coverage_rate):
-    """Get coverage status based on rate."""
-    if coverage_rate >= 80:
-        return "Excellent", "status-good", "🟢"
-    elif coverage_rate >= 60:
-        return "Good", "status-good", "🟡"
-    elif coverage_rate >= 40:
-        return "Fair", "status-warning", "🟠"
-    else:
-        return "Poor", "status-danger", "🔴"
-
-def display_extraction_summary(results, processing_time):
-    """Display extraction summary with metrics."""
-    st.subheader("📊 Extraction Summary")
+def display_extraction_summary(results: Dict[str, List[Dict[str, str]]], duration: float):
+    """Display extraction summary with metrics and status."""
+    total_codes = len(results["gri_disclosures"])
+    found_codes = sum(1 for item in results["gri_disclosures"] if item["status"] and item["status"].lower() == "yes")
+    coverage = found_codes / total_codes * 100 if total_codes > 0 else 0
     
-    # Calculate metrics
-    total_codes = len(results)
-    found_codes = len([r for r in results if r.get('status', '') and str(r.get('status', '')).upper() == 'YES'])
-    coverage_rate = (found_codes / total_codes * 100) if total_codes > 0 else 0
+    emoji, status_text, status_type = get_status_emoji(coverage)
     
-    # Get coverage status
-    coverage_text, coverage_class, coverage_emoji = get_coverage_status(coverage_rate)
+    st.subheader("📊 GRI Extraction Summary")
     
-    # Display metrics in columns
+    # Create metrics columns
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         st.metric(
             label="⏱️ Processing Time",
-            value=format_duration(processing_time),
-            help="Time taken to process the document"
+            value=format_duration(duration)
         )
     
     with col2:
         st.metric(
-            label="📋 Total GRI Codes",
-            value=str(total_codes),
-            help="Total number of GRI disclosure codes checked"
+            label="🎯 Total GRI Codes",
+            value=total_codes
         )
     
     with col3:
         st.metric(
-            label="✅ Found Codes",
-            value=str(found_codes),
-            delta=f"{found_codes - (total_codes - found_codes)}" if total_codes > 0 else None,
-            help="Number of GRI codes successfully found/extracted"
+            label="✅ Found GRI Codes",
+            value=found_codes,
+            delta=f"{coverage:.1f}%"
         )
     
     with col4:
         st.metric(
-            label=f"{coverage_emoji} Coverage Rate",
-            value=f"{coverage_rate:.1f}%",
-            help="Percentage of GRI codes found vs total codes"
+            label="📈 Coverage Rate",
+            value=f"{coverage:.1f}%"
         )
     
-    # Coverage status indicator
-    st.markdown(f"""
-    <div class="metric-container">
-        <h4>Coverage Assessment: <span class="{coverage_class}">{coverage_emoji} {coverage_text}</span></h4>
-        <p>Your document covers <strong>{coverage_rate:.1f}%</strong> of the checked GRI disclosure codes.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Status indicator
+    if status_type == "success":
+        st.success(f"🏆 Extraction Quality: {emoji} {status_text}")
+    elif status_type == "warning":
+        st.warning(f"🏆 Extraction Quality: {emoji} {status_text}")
+    elif status_type == "info":
+        st.info(f"🏆 Extraction Quality: {emoji} {status_text}")
+    else:
+        st.error(f"🏆 Extraction Quality: {emoji} {status_text}")
 
-def create_coverage_chart(results):
-    """Create coverage chart using Plotly."""
-    # Count statuses
-    status_counts = {}
-    for result in results:
-        status = result.get('status', 'Not Found')
-        status_counts[status] = status_counts.get(status, 0) + 1
+def create_coverage_chart(results: Dict[str, List[Dict[str, str]]]):
+    """Create coverage chart by GRI standard."""
+    # Group by material topic
+    topic_stats = {}
+    for item in results["gri_disclosures"]:
+        topic = item["material_topic"]
+        if topic not in topic_stats:
+            topic_stats[topic] = {"total": 0, "found": 0}
+        topic_stats[topic]["total"] += 1
+        if item["status"] and item["status"].lower() == "yes":
+            topic_stats[topic]["found"] += 1
+      # Calculate coverage percentages
+    chart_data = []
+    for topic, stats in topic_stats.items():
+        coverage = (stats["found"] / stats["total"]) * 100 if stats["total"] > 0 else 0
+        chart_data.append({
+            "GRI Standard": topic.replace("GRI ", ""),
+            "Coverage %": coverage,
+            "Found": stats["found"],
+            "Total": stats["total"]
+        })
     
-    if not status_counts:
-        return None
-      # Create pie chart
-    fig = px.pie(
-        values=list(status_counts.values()),
-        names=list(status_counts.keys()),
-        title="GRI Code Status Distribution",
-        color_discrete_map={
-            'YES': '#28a745',
-            'yes': '#28a745',
-            'none': '#dc3545',
-            'NONE': '#dc3545',
-            'Not Found': '#dc3545',
-            'Partial': '#ffc107',
-            'Error': '#dc3545'
-        }
+    if not chart_data:
+        # Return empty figure if no data
+        import plotly.graph_objects as go
+        fig = go.Figure()
+        fig.add_annotation(
+            text="No data available for chart",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False
+        )
+        return fig
+    
+    df_chart = pd.DataFrame(chart_data)
+    df_chart = df_chart.sort_values("Coverage %", ascending=True)
+    
+    # Create horizontal bar chart
+    fig = px.bar(
+        df_chart,
+        x="Coverage %",
+        y="GRI Standard",
+        orientation="h",
+        color="Coverage %",
+        color_continuous_scale="RdYlGn",
+        title="📈 GRI Coverage by Standard",
+        hover_data=["Found", "Total"],
+        height=max(400, len(df_chart) * 25)
     )
     
-    fig.update_traces(textposition='inside', textinfo='percent+label')
     fig.update_layout(
-        showlegend=True,
-        height=400,
-        margin=dict(t=50, b=0, l=0, r=0)
+        xaxis_title="Coverage Percentage (%)",
+        yaxis_title="GRI Standard",
+        coloraxis_colorbar_title="Coverage %",
+        showlegend=False
     )
     
     return fig
 
-def display_results_table(results):
+def display_results_table(results: Dict[str, List[Dict[str, str]]]):
     """Display results in an interactive table."""
-    st.subheader("📋 Detailed Results")
+    st.subheader("📋 Detailed GRI Disclosure Results")
+      # Convert to DataFrame
+    df = pd.DataFrame(results["gri_disclosures"])
     
-    if not results:
-        st.warning("No results to display.")
-        return None
+    # Handle null status values
+    df["status"] = df["status"].fillna("none")
     
-    # Convert results to DataFrame
-    df_data = []
-    for result in results:
-        df_data.append({
-            'Material Topic': result.get('material_topic', 'N/A'),
-            'GRI Code': result.get('gri_code', 'N/A'),
-            'Status': result.get('status', 'Not Found'),
-            'Status Icon': get_status_emoji(result.get('status', 'Not Found')),
-            'Content Preview': str(result.get('content', 'N/A'))[:100] + "..." if result.get('content') and len(str(result.get('content'))) > 100 else str(result.get('content', 'N/A'))
-        })
+    # Add status indicators
+    def get_status_icon(status):
+        if not status or pd.isna(status):
+            return "❌"
+        return "✅" if str(status).lower() == "yes" else "❌"
     
-    df = pd.DataFrame(df_data)
+    df["Status Icon"] = df["status"].apply(get_status_icon)
     
-    # Add filters
-    # col1, col2 = st.columns(2)
+    # Reorder columns
+    df = df[["Status Icon", "gri_code", "material_topic", "status"]]
+    df.columns = ["Status", "GRI Code", "Material Topic", "Found"]
     
-    # with col1:
-    status_filter = st.multiselect(
-        "Filter by Status:",
-        options=df['Status'].unique(),
-        default=df['Status'].unique(),
-    key="status_filter"
-    )
+    # Filter options
+    col1, col2 = st.columns(2)
     
-    # with col2:
-    topic_filter = st.multiselect(
-        "Filter by Material Topic:",
-        options=df['Material Topic'].unique(),
-        default=df['Material Topic'].unique(),
-        key="topic_filter"
-    )
+    with col1:
+        status_filter = st.selectbox(
+            "Filter by Status:",
+            options=["All", "Found Only", "Not Found Only"],
+            key="status_filter"
+        )
+    
+    with col2:
+        topic_filter = st.selectbox(
+            "Filter by GRI Standard:",
+            options=["All"] + sorted(df["Material Topic"].unique()),
+            key="topic_filter"        )
     
     # Apply filters
-    filtered_df = df[
-        (df['Status'].isin(status_filter)) & 
-        (df['Material Topic'].isin(topic_filter))
-    ]
+    filtered_df = df.copy()
     
-    # Display filtered results count
-    st.info(f"Showing {len(filtered_df)} of {len(df)} results")
+    if status_filter == "Found Only":
+        mask = (filtered_df["Found"].notna()) & (filtered_df["Found"].str.lower() == "yes")
+        filtered_df = filtered_df[mask]
+    elif status_filter == "Not Found Only":
+        mask = (
+            (filtered_df["Found"].isnull()) | 
+            (filtered_df["Found"] == "none") | 
+            ((filtered_df["Found"].notna()) & (filtered_df["Found"].str.lower() != "yes"))
+        )
+        filtered_df = filtered_df[mask]
+    
+    if topic_filter != "All":
+        filtered_df = filtered_df[filtered_df["Material Topic"] == topic_filter]
     
     # Display table
     st.dataframe(
         filtered_df,
         use_container_width=True,
-        height=400,
+        hide_index=True,
         column_config={
-            'Status Icon': st.column_config.TextColumn('Status'),
-            'Content Preview': st.column_config.TextColumn('Content Preview', width='large')
+            "Status": st.column_config.TextColumn(width="small"),
+            "GRI Code": st.column_config.TextColumn(width="small"),
+            "Material Topic": st.column_config.TextColumn(width="large"),
+            "Found": st.column_config.TextColumn(width="small")
         }
     )
     
-    return df
+    # Display filter summary
+    st.caption(f"Showing {len(filtered_df)} of {len(df)} total GRI disclosures")
 
 def main():
-    # Header
-    st.markdown('<h1 class="main-header">📊 GRI Disclosure Extractor</h1>', unsafe_allow_html=True)
-    st.markdown("**Extract and analyze GRI (Global Reporting Initiative) disclosures from PDF documents**")
+    """Main Streamlit application."""
+    st.title("📊 GRI Disclosure Extractor")
+    st.markdown("Extract GRI (Global Reporting Initiative) disclosures from sustainability report PDFs")
     
-    # Sidebar
-    with st.sidebar:
-        st.header("🔧 Configuration")
-        
-        # Method selection
-        method = st.selectbox(
-            "Extraction Method:",
-            options=["Auto", "Pattern", "TF-IDF", "LLM"],
-            index=2,  # Default to TF-IDF
-            help="Choose the method for extracting GRI disclosures"
+    # Sidebar configuration
+    st.sidebar.header("⚙️ Configuration")
+    
+    # Method selection
+    extraction_method = st.sidebar.selectbox(
+        "🔍 Extraction Method:",
+        options=[
+            "Auto (Pattern Match → TF-IDF → LLM)",
+            "Pattern Matching Only",
+            "TF-IDF Similarity Only",
+            "LLM Analysis Only"
+        ],
+        help="Choose the extraction strategy to use"
+    )
+    
+    # Optional Groq API key
+    use_llm = st.sidebar.checkbox(
+        "🤖 Enable LLM Fallback",
+        value=False,
+        help="Enable Groq LLM as fallback for difficult cases"
+    )
+    
+    groq_api_key = None
+    if use_llm or "LLM" in extraction_method:
+        groq_api_key = st.sidebar.text_input(
+            "🔑 Groq API Key:",
+            type="password",
+            help="Enter your Groq API key for LLM analysis"
         )
         
-        # Recommendation note
-        st.markdown("""
-        <div class="sidebar-note">
-            <h4>💡 Recommendation</h4>
-            <p>The <strong>TF-IDF method</strong> provides the best balance of accuracy and speed for most documents.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        if not groq_api_key and ("LLM" in extraction_method):
+            st.sidebar.warning("⚠️ Groq API key required for LLM analysis")
+    
+    # File upload
+    st.header("📄 Upload Sustainability Report PDF")
+    uploaded_file = st.file_uploader(
+        "Choose a PDF file",
+        type="pdf",
+        help="Upload a sustainability report PDF to extract GRI disclosures"
+    )
+    
+    if uploaded_file is not None:
+        # Save uploaded file temporarily
+        temp_path = f"temp_{uploaded_file.name}"
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
         
-        # API Key status
-        api_key = os.getenv('GROQ_API_KEY')
-        if method == "LLM":
-            if api_key:
-                st.success("✅ GROQ API Key loaded")
-            else:
-                st.error("❌ GROQ API Key not found")
-                st.info("Please add GROQ_API_KEY to your .env file for LLM method")
+        # Display file info
+        file_size = len(uploaded_file.getbuffer()) / (1024 * 1024)  # MB
+        st.success(f"✅ File uploaded: {uploaded_file.name} ({file_size:.1f} MB)")
         
-        # Advanced options
-        with st.expander("⚙️ Advanced Options"):
-            chunk_size = st.slider("Chunk Size", 500, 2000, 1000, 100, help="Text chunk size for processing")
-            confidence_threshold = st.slider("Confidence Threshold", 0.1, 1.0, 0.5, 0.1, help="Minimum confidence for extraction")
-    
-    # Main content area
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.subheader("📁 Upload Document")
-        uploaded_file = st.file_uploader(
-            "Choose a PDF file",
-            type="pdf",
-            help="Upload a PDF document containing GRI disclosures"
-        )
-    
-    with col2:
-        if uploaded_file:
-            st.subheader("📄 File Info")
-            st.info(f"**Filename:** {uploaded_file.name}")
-            st.info(f"**Size:** {uploaded_file.size:,} bytes")
-            st.info(f"**Type:** {uploaded_file.type}")
-    
-    # Process file    if uploaded_file is not None:
-        if st.button("🚀 Extract GRI Disclosures", type="primary", use_container_width=True):
-            temp_path = f"temp_{uploaded_file.name}"
+        # Extract button
+        if st.button("🚀 Extract GRI Disclosures", type="primary"):
             try:
-                with st.spinner(f"Processing document using {method} method..."):
-                    # Save uploaded file temporarily
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
-                    
-                    # Initialize extractor
-                    extractor = GRIExtractor()
-                    
-                    # Start timing
+                with st.spinner("🔄 Processing PDF and extracting GRI disclosures..."):
                     start_time = time.time()
                     
-                    # Extract based on method
-                    raw_results = extractor.extract_gri_disclosures(temp_path)
+                    # Initialize extractor
+                    extractor = GRIExtractor(groq_api_key=groq_api_key)
                     
-                    # Convert results format for display
-                    if 'gri_disclosures' in raw_results:
-                        results = raw_results['gri_disclosures']
+                    # Extract text from PDF
+                    pages_data = extractor.extract_text_from_pdf(temp_path)
+                    
+                    if not pages_data:
+                        st.error("❌ Failed to extract text from PDF")
+                        return
+                    
+                    st.info(f"📖 Extracted text from {len(pages_data)} pages")
+                    
+                    # Detect GRI section based on selected method
+                    gri_start_page = None
+                    
+                    if extraction_method == "Pattern Matching Only":
+                        gri_start_page = extractor.detect_gri_section_pattern_matching(pages_data)
+                    elif extraction_method == "TF-IDF Similarity Only":
+                        gri_start_page = extractor.detect_gri_section_tfidf(pages_data)
+                    elif extraction_method == "LLM Analysis Only":
+                        if groq_api_key:
+                            gri_start_page = extractor.detect_gri_section_llm(pages_data)
+                        else:
+                            st.error("❌ Groq API key required for LLM analysis")
+                            return
+                    else:  # Auto method
+                        # Try pattern matching first
+                        gri_start_page = extractor.detect_gri_section_pattern_matching(pages_data)
+                        
+                        # Fallback to TF-IDF
+                        if gri_start_page is None:
+                            st.info("🔄 Pattern matching failed, trying TF-IDF...")
+                            gri_start_page = extractor.detect_gri_section_tfidf(pages_data)
+                        
+                        # Fallback to LLM if enabled
+                        if gri_start_page is None and groq_api_key:
+                            st.info("🔄 TF-IDF failed, trying LLM...")
+                            gri_start_page = extractor.detect_gri_section_llm(pages_data)
+                    
+                    if gri_start_page is None:
+                        st.warning("⚠️ Could not detect GRI section using selected method")
+                        results = extractor._create_empty_result()
                     else:
-                        results = raw_results
+                        st.success(f"✅ Found GRI section starting at page {gri_start_page}")
+                        
+                        # Extract GRI codes
+                        gri_status = extractor.extract_gri_codes_from_section(pages_data, gri_start_page)
+                        results = extractor._format_results(gri_status)
                     
-                    # Calculate processing time
-                    processing_time = time.time() - start_time
-                    
-                    # Clean up temp file
-                    if os.path.exists(temp_path):
-                        os.remove(temp_path)
+                    end_time = time.time()
+                    duration = end_time - start_time
                 
-                # Store results in session state
-                st.session_state.results = results
-                st.session_state.processing_time = processing_time
-                st.session_state.method_used = method
-                st.session_state.filename = uploaded_file.name
+                # Display results
+                st.header("🎯 Extraction Results")
                 
-                st.success(f"✅ Extraction completed using {method} method!")
+                # Summary metrics
+                display_extraction_summary(results, duration)
+                
+                # Coverage chart
+                st.subheader("📊 Coverage Analysis")
+                fig = create_coverage_chart(results)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Results table
+                display_results_table(results)
+                
+                # Download options
+                st.header("💾 Download Results")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # JSON download
+                    json_str = json.dumps(results, indent=2, ensure_ascii=False)
+                    st.download_button(
+                        label="📄 Download JSON",
+                        data=json_str,
+                        file_name=f"gri_results_{uploaded_file.name.replace('.pdf', '')}.json",
+                        mime="application/json"
+                    )
+                
+                with col2:
+                    # CSV download
+                    df_download = pd.DataFrame(results["gri_disclosures"])
+                    csv_str = df_download.to_csv(index=False)
+                    st.download_button(
+                        label="📊 Download CSV",
+                        data=csv_str,
+                        file_name=f"gri_results_{uploaded_file.name.replace('.pdf', '')}.csv",
+                        mime="text/csv"
+                    )
                 
             except Exception as e:
                 st.error(f"❌ Error during extraction: {str(e)}")
+                
+            finally:
+                # Clean up temporary file
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
     
-    # Display results if available
-    if hasattr(st.session_state, 'results') and st.session_state.results:
-        st.divider()
+    # Information section
+    with st.expander("ℹ️ About GRI Extraction Methods"):
+        st.markdown("""
+        ### Extraction Methods:
         
-        # Display summary
-        display_extraction_summary(st.session_state.results, st.session_state.processing_time)
+        **🔍 Pattern Matching**
+        - Searches for specific GRI-related keywords and patterns
+        - Fast and reliable for well-formatted documents
+        - Best for documents with clear GRI section headers
         
-        # Create tabs for different views
-        tab1, tab2, tab3 = st.tabs(["📋 Table View", "📊 Charts", "💾 Download"])
+        **📊 TF-IDF Similarity**
+        - Uses machine learning to find semantically similar content
+        - Good for documents with varied formatting
+        - Analyzes text similarity to GRI-related terms
         
-        with tab1:
-            df = display_results_table(st.session_state.results)
+        **🤖 LLM Analysis**
+        - Uses advanced AI to understand document structure
+        - Most flexible but requires API key
+        - Best for complex or non-standard documents
         
-        with tab2:
-            st.subheader("📊 Coverage Analysis")
-            fig = create_coverage_chart(st.session_state.results)
-            if fig:
-                st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.info("No chart data available")
+        **⚡ Auto Mode**
+        - Tries methods in sequence: Pattern → TF-IDF → LLM
+        - Recommended for best results
+        - Balances speed and accuracy
+        """)
+    
+    with st.expander("📋 Supported GRI Standards"):
+        st.markdown("""
+        This tool supports extraction of **134 GRI disclosure codes** across:
         
-        with tab3:
-            st.subheader("💾 Download Results")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                # JSON download
-                json_data = json.dumps(st.session_state.results, indent=2, ensure_ascii=False)
-                st.download_button(
-                    label="📄 Download JSON",
-                    data=json_data,
-                    file_name=f"gri_results_{st.session_state.filename}_{st.session_state.method_used}.json",
-                    mime="application/json",
-                    use_container_width=True
-                )
-            
-            with col2:
-                # CSV download
-                if 'df' in locals() and df is not None:
-                    csv_buffer = BytesIO()
-                    df.to_csv(csv_buffer, index=False, encoding='utf-8')
-                    csv_data = csv_buffer.getvalue()
-                    
-                    st.download_button(
-                        label="📊 Download CSV",
-                        data=csv_data,
-                        file_name=f"gri_results_{st.session_state.filename}_{st.session_state.method_used}.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-            
-            # Summary info
-            st.info(f"""
-            **Export Summary:**
-            - Method: {st.session_state.method_used}
-            - Processing Time: {format_duration(st.session_state.processing_time)}
-            - Total Results: {len(st.session_state.results)}
-            - Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}
-            """)
+        - **GRI 2**: General Disclosures 2021 (30 codes)
+        - **GRI 3**: Material Topics 2021 (3 codes)
+        - **GRI 101**: Biodiversity 2024 (8 codes)
+        - **Economic Standards**: GRI 201-207 (16 codes)
+        - **Environmental Standards**: GRI 301-308 (33 codes)
+        - **Social Standards**: GRI 401-418 (44 codes)
+        """)
 
 if __name__ == "__main__":
     main()
