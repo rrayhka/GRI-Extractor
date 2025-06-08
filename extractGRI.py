@@ -628,7 +628,7 @@ class GRIExtractor:
         gri_start_page = None
         
         # Strategy 1: Pattern matching
-        # gri_start_page = self.detect_gri_section_pattern_matching(pages_data)
+        gri_start_page = self.detect_gri_section_pattern_matching(pages_data)
         
         # Strategy 2: TF-IDF (fallback)
         if gri_start_page is None:
