@@ -270,18 +270,6 @@ def main():
         help="Enable Groq LLM as fallback for difficult cases"
     )
     
-    
-    # groq_api_key = None
-    # if use_llm or "LLM" in extraction_method:
-    #     groq_api_key = st.sidebar.text_input(
-    #         "🔑 Groq API Key:",
-    #         type="password",
-    #         help="Enter your Groq API key for LLM analysis"
-    #     )
-        
-    #     if not groq_api_key and ("LLM" in extraction_method):
-    #         st.sidebar.warning("⚠️ Groq API key required for LLM analysis")
-    # groq_api_key = os.getenv("GROQ_API_KEY")
     groq_api_key = os.getenv("GROQ_API_KEY")
     if use_llm or "LLM" in extraction_method:
         # Show current status
