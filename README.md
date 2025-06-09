@@ -127,7 +127,7 @@ The application will open in your default web browser at `http://localhost:8501`
 
 1. **📁 Upload PDF**: Drag and drop or browse for your sustainability report PDF
 2. **⚙️ Configure Settings**:
-   - Choose extraction method (Auto recommended)
+   - Choose extraction method (TF IDF recommended)
    - Enable/disable LLM fallback
    - Optionally provide Groq API key
 3. **🚀 Extract**: Click "Extract GRI Disclosures" button
