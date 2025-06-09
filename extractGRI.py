@@ -512,7 +512,7 @@ class GRIExtractor:
                     messages=[{"role": "user", "content": prompt}],
                     model="llama3-8b-8192",
                     temperature=0.1,
-                    max_tokens=10
+                    # max_tokens=10 #
                 )
                 
                 content = response.choices[0].message.content
